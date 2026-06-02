@@ -129,31 +129,42 @@ func UpdatePost(c *gin.Context) {
 	}
 
 	// 2. KUNCI KEAMANAN: Jika bukan Superadmin (1), cek kepemilikan artikel
-	// Kita konversi userID ke uint karena di database tipe ID adalah uint
 	if roleID.(float64) != 1 && post.AuthorID != uint(userID.(float64)) {
 		c.JSON(http.StatusForbidden, gin.H{"error": "Akses ditolak! Anda hanya boleh mengedit artikel sendiri"})
 		return
 	}
 
-	var input struct {
-		Title      string `json:"title"`
-		Slug       string `json:"slug"`
-		Content    string `json:"content"`
-		Status     string `json:"status"`
-		CategoryID uint   `json:"category_id"`
+	// 3. Ambil data teks dari form (bukan JSON)
+	title := c.PostForm("title")
+	slug := c.PostForm("slug")
+	content := c.PostForm("content")
+	status := c.PostForm("status")
+	categoryIDStr := c.PostForm("category_id")
+	categoryID, _ := strconv.Atoi(categoryIDStr)
+
+	// 4. LOGIKA UPDATE GAMBAR (Opsional)
+	thumbnailPath := post.Thumbnail // Default: gunakan jalur gambar yang lama
+
+	file, err := c.FormFile("thumbnail")
+	if err == nil { // Jika penulis mengunggah file gambar BARU saat edit
+		extension := filepath.Ext(file.Filename)
+		newFileName := strconv.FormatInt(time.Now().Unix(), 10) + extension
+		savePath := "./uploads/" + newFileName
+		
+		// Simpan file baru ke server, dan perbarui jalur thumbnail
+		if err := c.SaveUploadedFile(file, savePath); err == nil {
+			thumbnailPath = "/uploads/" + newFileName 
+		}
 	}
 
-	if err := c.ShouldBindJSON(&input); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
+	// 5. Update data ke database
 	config.DB.Model(&post).Updates(models.Post{
-		Title:      input.Title,
-		Slug:       input.Slug,
-		Content:    input.Content,
-		Status:     input.Status,
-		CategoryID: input.CategoryID,
+		Title:      title,
+		Slug:       slug,
+		Content:    content,
+		Status:     status,
+		CategoryID: uint(categoryID),
+		Thumbnail:  thumbnailPath, // Update dengan gambar baru (atau tetap yang lama jika tidak ada file baru)
 	})
 
 	c.JSON(http.StatusOK, gin.H{"message": "Artikel berhasil diupdate", "data": post})
@@ -201,5 +212,22 @@ func GetPublicPosts(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
 		"message": "Berhasil mengambil artikel publik",
 		"data":    posts,
+	})
+}
+
+// Fungsi untuk mengambil satu artikel publik berdasarkan Slug
+func GetPublicPostBySlug(c *gin.Context) {
+	slug := c.Param("slug")
+	var post models.Post
+
+	// Cari artikel yang statusnya 'published' dan muat data Author-nya
+	if err := config.DB.Preload("Author").Where("slug = ? AND status = ?", slug, "published").First(&post).Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Artikel tidak ditemukan atau belum diterbitkan"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"message": "Berhasil mengambil detail artikel",
+		"data":    post,
 	})
 }

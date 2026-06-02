@@ -100,45 +100,34 @@ export default function DashboardPage() {
     setFormSubmitLoading(true);
     const token = localStorage.getItem("token");
 
+    // 1. Bungkus SEMUA data ke dalam FormData
+    const formData = new FormData();
+    formData.append("title", title);
+    formData.append("slug", slug);
+    formData.append("content", content);
+    formData.append("status", status);
+    formData.append("category_id", String(categoryID));
+    
+    // Jika ada file gambar baru/yang diunggah, masukkan ke bungkusan
+    if (thumbnail) {
+      formData.append("thumbnail", thumbnail);
+    }
+
+    // 2. Tentukan URL dan Method sesuai mode (Edit atau Tambah)
+    const url = isEditing 
+      ? `http://localhost:8080/api/posts/${editId}` 
+      : "http://localhost:8080/api/posts";
+    const method = isEditing ? "PUT" : "POST";
+
     try {
-      let response;
-
-      if (isEditing) {
-        // --- LOGIKA EDIT (Sementara tetap pakai JSON) ---
-        response = await fetch(`http://localhost:8080/api/posts/${editId}`, {
-          method: "PUT",
-          headers: {
-            "Authorization": `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            title, slug, content, status, category_id: Number(categoryID),
-          }),
-        });
-      } else {
-        // --- LOGIKA TAMBAH BARU (Pakai FormData untuk Gambar) ---
-        const formData = new FormData();
-        formData.append("title", title);
-        formData.append("slug", slug);
-        formData.append("content", content);
-        formData.append("status", status);
-        formData.append("category_id", String(categoryID));
-        
-        // Masukkan file gambar ke dalam bungkusan jika ada
-        if (thumbnail) {
-          formData.append("thumbnail", thumbnail);
-        }
-
-        response = await fetch("http://localhost:8080/api/posts", {
-          method: "POST",
-          headers: {
-            "Authorization": `Bearer ${token}`,
-            // PENTING: Jangan tulis "Content-Type" di sini. 
-            // Browser akan otomatis menyetelnya menjadi multipart/form-data.
-          },
-          body: formData,
-        });
-      }
+      const response = await fetch(url, {
+        method: method,
+        headers: {
+          "Authorization": `Bearer ${token}`,
+          // JANGAN tambah Content-Type: application/json agar browser mengirim file
+        },
+        body: formData,
+      });
 
       const data = await response.json();
       if (!response.ok) throw new Error(data.error || "Gagal menyimpan artikel");

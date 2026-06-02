@@ -3,6 +3,7 @@
 import Image from "next/image";
 import React, { useState, useEffect } from "react";
 import LiquidEther from "@/components/LiquidEther";
+import Link from "next/link";
 
 export default function Home() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -410,9 +411,12 @@ export default function Home() {
                     </div>
                     {post.Author?.username || "Anonim"}
                   </span>
-                  <button className="text-accent-purple text-[10px] font-bold uppercase tracking-widest hover:text-white transition-colors">
+                  <Link 
+                    href={`/posts/${post.Slug}`} 
+                    className="text-accent-purple text-[10px] font-bold uppercase tracking-widest hover:text-white transition-colors z-10 relative"
+                  >
                     Baca ➝
-                  </button>
+                  </Link>
                 </div>
               </div>
             ))}
