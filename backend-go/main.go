@@ -50,6 +50,7 @@ func main() {
 		// === ROUTE PUBLIK (Tanpa Token) ===
 		api.GET("/public/posts", controllers.GetPublicPosts)
 		api.GET("/public/posts/:slug", controllers.GetPublicPostBySlug)
+		api.GET("/public/categories", controllers.GetPublicCategories)
 	}
 
 	// === ROUTE TERPROTEKSI (Wajib Login) ===

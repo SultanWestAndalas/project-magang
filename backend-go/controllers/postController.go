@@ -4,6 +4,7 @@ import (
 	"backend-go/config"
 	"backend-go/models"
 	"net/http"
+	"os"
 	"path/filepath" 
 	"strconv"       
 	"strings"      
@@ -196,6 +197,13 @@ func DeletePost(c *gin.Context) {
 		return
 	}
 
+	// === LOGIKA BARU: Hapus File Gambar Fisik ===
+	if post.Thumbnail != "" {
+		filePath := "." + post.Thumbnail // Mengubah "/uploads/xxx.jpg" menjadi "./uploads/xxx.jpg"
+		os.Remove(filePath) // Meminta sistem (Windows/Linux) untuk menghapus file tersebut
+	}
+	// ============================================
+
 	c.JSON(http.StatusOK, gin.H{"message": "Artikel berhasil dihapus"})
 }
 
@@ -230,4 +238,14 @@ func GetPublicPostBySlug(c *gin.Context) {
 		"message": "Berhasil mengambil detail artikel",
 		"data":    post,
 	})
+}
+
+// Fungsi untuk mengambil semua kategori (Publik)
+func GetPublicCategories(c *gin.Context) {
+	var categories []models.Category
+	if err := config.DB.Find(&categories).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Gagal mengambil data kategori"})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"data": categories})
 }

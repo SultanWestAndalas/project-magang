@@ -8,11 +8,16 @@ import Link from "next/link";
 export default function Home() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
-  // --- TAMBAHKAN KODE LOGIKA INI ---
+  // --- STATE ARTIKEL & KATEGORI ---
   const [posts, setPosts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  
+  // 1. Tambahan state untuk fitur filter kategori
+  const [categories, setCategories] = useState<any[]>([]);
+  const [activeCategory, setActiveCategory] = useState<number | 'all'>('all');
 
   useEffect(() => {
+    // Tarik data Artikel
     const fetchPublicPosts = async () => {
       try {
         const res = await fetch("http://localhost:8080/api/public/posts");
@@ -24,9 +29,26 @@ export default function Home() {
         setLoading(false);
       }
     };
+
+    // 2. Tarik data Kategori dari backend
+    const fetchPublicCategories = async () => {
+      try {
+        const res = await fetch("http://localhost:8080/api/public/categories");
+        const data = await res.json();
+        if (res.ok) setCategories(data.data || []);
+      } catch (error) {
+        console.error("Gagal mengambil kategori:", error);
+      }
+    };
+
     fetchPublicPosts();
+    fetchPublicCategories(); // Panggil fungsi pengambilan kategori
   }, []);
-  // ---------------------------------
+
+  // 3. Logika penyaringan artikel berdasarkan kategori yang diklik
+  const filteredPosts = activeCategory === 'all' 
+    ? posts 
+    : posts.filter(post => post.CategoryID === activeCategory);
 
   return (
     <main className="min-h-screen bg-curoky circuit-pattern relative overflow-hidden font-sans selection:bg-accent-purple/30">
@@ -56,7 +78,7 @@ export default function Home() {
       <nav className="fixed top-6 left-1/2 -translate-x-1/2 z-50 w-[95%] max-w-7xl">
         <div className="glass px-6 md:px-8 py-4 rounded-full flex items-center justify-between relative z-20">
           <div className="text-xl md:text-2xl font-bold tracking-tight text-white flex items-center gap-2">
-            <div className="w-6 h-6 md:w-8 md:h-8 bg-gradient-to-br from-accent-purple to-accent-magenta rounded-lg shadow-lg shadow-accent-purple/20"></div>
+            <img src="/logo-rai.png" alt="Logo rAi" className="w-10 h-10 object-contain" />
             ResponsAIbility
           </div>
 
@@ -356,17 +378,37 @@ export default function Home() {
           </h2>
         </div>
 
+        {/* === UI TOMBOL FILTER KATEGORI (PASANG DI SINI) === */}
+        <div className="flex flex-wrap justify-center gap-4 mb-12 relative z-10">
+          <button 
+            onClick={() => setActiveCategory('all')}
+            className={`px-6 py-2.5 rounded-full text-sm font-semibold transition-all duration-300 ${activeCategory === 'all' ? 'bg-gradient-to-r from-accent-purple to-accent-magenta text-white shadow-lg shadow-purple-500/25 border-transparent' : 'bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white border border-white/10'}`}
+          >
+            Semua Artikel
+          </button>
+          {categories.map(cat => (
+            <button 
+              key={cat.ID}
+              onClick={() => setActiveCategory(cat.ID)}
+              className={`px-6 py-2.5 rounded-full text-sm font-semibold transition-all duration-300 ${activeCategory === cat.ID ? 'bg-gradient-to-r from-accent-purple to-accent-magenta text-white shadow-lg shadow-purple-500/25 border-transparent' : 'bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white border border-white/10'}`}
+            >
+              {cat.Name}
+            </button>
+          ))}
+        </div>
+        {/* =================================================== */}
+
         {loading ? (
           <div className="flex justify-center items-center py-10">
             <div className="w-10 h-10 border-2 border-accent-purple border-t-transparent rounded-full animate-spin"></div>
           </div>
-        ) : posts.length === 0 ? (
+        ) : filteredPosts.length === 0 ? ( // <--- UBAH INI JADI filteredPosts
           <div className="glass p-8 rounded-[32px] text-center text-text-secondary border border-white/5">
-            Belum ada artikel yang diterbitkan saat ini.
+            Belum ada artikel yang diterbitkan untuk kategori ini.
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {posts.map((post) => (
+            {filteredPosts.map((post) => ( // <--- UBAH INI JADI filteredPosts
               <div key={post.ID} className="glass p-6 md:p-8 rounded-[32px] group hover:border-accent-purple/50 transition-all duration-500 relative flex flex-col h-full overflow-hidden">
                 {/* Dekorasi sudut membulat bawaan desain asli */}
                 <div className="absolute top-0 right-0 w-32 h-32 bg-accent-purple/5 rounded-full -translate-y-1/2 translate-x-1/2 group-hover:bg-accent-purple/10 transition-all duration-500" />
@@ -457,7 +499,7 @@ export default function Home() {
           {/* Brand */}
           <div className="md:col-span-1">
             <div className="text-2xl font-bold text-white flex items-center gap-2 mb-4">
-              <div className="w-8 h-8 rounded-lg" style={{ background: 'linear-gradient(135deg, #9d50bb, #6e48aa)' }} />
+              <img src="/logo-rai.png" alt="Logo rAi" className="w-12 h-12 object-contain" />
               ResponsAIbility
             </div>
             <p className="text-text-secondary text-sm leading-relaxed">
