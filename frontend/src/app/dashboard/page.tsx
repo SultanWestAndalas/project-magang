@@ -93,28 +93,52 @@ export default function DashboardPage() {
     setIsEditing(false); setEditId(null); setIsModalOpen(false);
   };
 
+  
   // Fungsi Submit (Tambah & Edit)
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setFormSubmitLoading(true);
     const token = localStorage.getItem("token");
 
-    const url = isEditing 
-      ? `http://localhost:8080/api/posts/${editId}` 
-      : "http://localhost:8080/api/posts";
-    const method = isEditing ? "PUT" : "POST";
-
     try {
-      const response = await fetch(url, {
-        method: method,
-        headers: {
-          "Authorization": `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          title, slug, content, status, category_id: Number(categoryID),
-        }),
-      });
+      let response;
+
+      if (isEditing) {
+        // --- LOGIKA EDIT (Sementara tetap pakai JSON) ---
+        response = await fetch(`http://localhost:8080/api/posts/${editId}`, {
+          method: "PUT",
+          headers: {
+            "Authorization": `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            title, slug, content, status, category_id: Number(categoryID),
+          }),
+        });
+      } else {
+        // --- LOGIKA TAMBAH BARU (Pakai FormData untuk Gambar) ---
+        const formData = new FormData();
+        formData.append("title", title);
+        formData.append("slug", slug);
+        formData.append("content", content);
+        formData.append("status", status);
+        formData.append("category_id", String(categoryID));
+        
+        // Masukkan file gambar ke dalam bungkusan jika ada
+        if (thumbnail) {
+          formData.append("thumbnail", thumbnail);
+        }
+
+        response = await fetch("http://localhost:8080/api/posts", {
+          method: "POST",
+          headers: {
+            "Authorization": `Bearer ${token}`,
+            // PENTING: Jangan tulis "Content-Type" di sini. 
+            // Browser akan otomatis menyetelnya menjadi multipart/form-data.
+          },
+          body: formData,
+        });
+      }
 
       const data = await response.json();
       if (!response.ok) throw new Error(data.error || "Gagal menyimpan artikel");
@@ -382,6 +406,17 @@ export default function DashboardPage() {
                     <option value="published" className="bg-slate-800 text-white">Terbit</option>
                   </select>
                 </div>
+              </div>
+
+              {/* Input Upload Gambar (Tambahkan ini) */}
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-1.5">Gambar Thumbnail (Opsional)</label>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => setThumbnail(e.target.files ? e.target.files[0] : null)}
+                  className="w-full px-4 py-3 rounded-xl bg-black/30 border border-white/10 text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-600 file:text-white hover:file:bg-blue-500 transition"
+                />
               </div>
 
               {/* Konten */}
