@@ -1,0 +1,373 @@
+@import "tailwindcss";
+
+:root {
+  /* Curoky Inspired Color Palette */
+  --bg-dark: #020205;
+  --bg-card: rgba(8, 8, 12, 0.4);
+  --accent-purple: #9d50bb;
+  --accent-magenta: #6e48aa;
+  --accent-glow: rgba(157, 80, 187, 0.4);
+  --text-primary: #ffffff;
+  --text-secondary: #a1a1aa;
+  
+  --background: var(--bg-dark);
+  --foreground: var(--text-primary);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-accent-purple: var(--accent-purple);
+  --color-accent-magenta: var(--accent-magenta);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
+  overflow-x: hidden;
+}
+
+/* Custom Utilities */
+.glass {
+  background: rgba(15, 15, 20, 0.6);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.text-gradient {
+  background: linear-gradient(135deg, #ffffff 0%, #a1a1aa 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.bg-curoky {
+  background: radial-gradient(circle at 50% -20%, #2e1065 0%, #020617 100%);
+}
+
+.circuit-pattern {
+  background-image: radial-gradient(rgba(157, 80, 187, 0.1) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
+.glow-arc {
+  position: absolute;
+  width: 1000px;
+  height: 400px;
+  background: radial-gradient(ellipse at center, var(--accent-glow) 0%, transparent 70%);
+  filter: blur(80px);
+  z-index: -1;
+  border-radius: 50%;
+  transform: rotate(-10deg);
+}
+
+/* ── Button Keyframes ────────────────────────── */
+@keyframes shimmer {
+  0%   { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+
+@keyframes btn-glow-pulse {
+  0%, 100% { box-shadow: 0 0 12px 2px rgba(255,255,255,0.25), 0 4px 24px rgba(255,255,255,0.12); }
+  50%       { box-shadow: 0 0 28px 6px rgba(255,255,255,0.45), 0 8px 32px rgba(255,255,255,0.22); }
+}
+
+@keyframes btn-purple-pulse {
+  0%, 100% { box-shadow: 0 0 12px 2px rgba(157,80,187,0.35), 0 4px 24px rgba(157,80,187,0.15); }
+  50%       { box-shadow: 0 0 28px 6px rgba(157,80,187,0.6),  0 8px 32px rgba(157,80,187,0.3); }
+}
+
+/* ── Primary Button ──────────────────────────── */
+.btn-primary {
+  position: relative;
+  overflow: hidden;
+  background: #ffffff;
+  color: #000000;
+  padding: 0.75rem 1.75rem;
+  border-radius: 9999px;
+  font-weight: 700;
+  font-size: 0.875rem;
+  letter-spacing: 0.02em;
+  transition: transform 0.25s cubic-bezier(0.34,1.56,0.64,1),
+              box-shadow 0.25s ease,
+              background 0.25s ease;
+  cursor: pointer;
+  outline: none;
+  border: none;
+}
+
+/* Shimmer overlay */
+.btn-primary::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    105deg,
+    transparent 40%,
+    rgba(255,255,255,0.55) 50%,
+    transparent 60%
+  );
+  background-size: 200% 100%;
+  background-position: -200% center;
+  border-radius: inherit;
+  transition: background-position 0s;
+  pointer-events: none;
+}
+
+.btn-primary:hover::before {
+  animation: shimmer 0.65s ease forwards;
+}
+
+.btn-primary:hover {
+  transform: translateY(-3px) scale(1.05);
+  animation: btn-glow-pulse 1.6s ease-in-out infinite;
+}
+
+.btn-primary:active {
+  transform: translateY(0) scale(0.97);
+  box-shadow: 0 0 0px rgba(255,255,255,0);
+  animation: none;
+}
+
+/* ── Secondary Button ────────────────────────── */
+.btn-secondary {
+  position: relative;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.05);
+  color: #ffffff;
+  padding: 0.75rem 1.75rem;
+  border-radius: 9999px;
+  font-weight: 700;
+  font-size: 0.875rem;
+  letter-spacing: 0.02em;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  transition: transform 0.25s cubic-bezier(0.34,1.56,0.64,1),
+              box-shadow 0.25s ease,
+              background 0.25s ease,
+              border-color 0.25s ease;
+  cursor: pointer;
+  outline: none;
+}
+
+/* Purple shimmer overlay */
+.btn-secondary::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    105deg,
+    transparent 40%,
+    rgba(157,80,187,0.3) 50%,
+    transparent 60%
+  );
+  background-size: 200% 100%;
+  background-position: -200% center;
+  border-radius: inherit;
+  pointer-events: none;
+}
+
+.btn-secondary:hover::before {
+  animation: shimmer 0.65s ease forwards;
+}
+
+.btn-secondary:hover {
+  transform: translateY(-3px) scale(1.04);
+  background: rgba(157, 80, 187, 0.12);
+  border-color: rgba(157, 80, 187, 0.5);
+  animation: btn-purple-pulse 1.6s ease-in-out infinite;
+}
+
+.btn-secondary:active {
+  transform: translateY(0) scale(0.97);
+  box-shadow: none;
+  animation: none;
+}
+
+/* ── Ghost / Navbar Text Button ──────────────── */
+.btn-ghost {
+  position: relative;
+  overflow: hidden;
+  background: transparent;
+  color: #ffffff;
+  padding: 0.5rem 1.1rem;
+  border-radius: 9999px;
+  font-weight: 600;
+  font-size: 0.875rem;
+  transition: background 0.2s ease, transform 0.2s cubic-bezier(0.34,1.56,0.64,1);
+  cursor: pointer;
+  outline: none;
+  border: none;
+}
+
+.btn-ghost:hover {
+  background: rgba(255, 255, 255, 0.08);
+  transform: scale(1.06);
+}
+
+.btn-ghost:active {
+  transform: scale(0.96);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+/* ── Sign-Up Navbar Button (inline usage) ─────── */
+.btn-signup {
+  position: relative;
+  overflow: hidden;
+  background: #ffffff;
+  color: #000000;
+  padding: 0.55rem 1.4rem;
+  border-radius: 9999px;
+  font-weight: 700;
+  font-size: 0.875rem;
+  transition: transform 0.25s cubic-bezier(0.34,1.56,0.64,1),
+              box-shadow 0.25s ease;
+  cursor: pointer;
+  outline: none;
+  border: none;
+}
+
+.btn-signup::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(105deg, transparent 40%, rgba(255,255,255,0.6) 50%, transparent 60%);
+  background-size: 200% 100%;
+  background-position: -200% center;
+  border-radius: inherit;
+  pointer-events: none;
+}
+
+.btn-signup:hover::before { animation: shimmer 0.55s ease forwards; }
+.btn-signup:hover { transform: translateY(-2px) scale(1.06); box-shadow: 0 0 20px rgba(255,255,255,0.35); }
+.btn-signup:active { transform: scale(0.96); box-shadow: none; animation: none; }
+
+/* ── Icon / Hamburger Button ─────────────────── */
+.btn-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: transparent;
+  color: #ffffff;
+  padding: 0.5rem;
+  border-radius: 9999px;
+  cursor: pointer;
+  outline: none;
+  transition: background 0.2s ease, transform 0.2s cubic-bezier(0.34,1.56,0.64,1);
+}
+
+.btn-icon:hover {
+  background: rgba(255, 255, 255, 0.1);
+  transform: scale(1.1);
+}
+
+.btn-icon:active {
+  transform: scale(0.9);
+}
+
+/* ── Smooth Scroll ───────────────────────────── */
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 96px; /* offset for fixed navbar */
+}
+
+/* ── Navbar Link (Desktop) ───────────────────── */
+.nav-link {
+  position: relative;
+  color: var(--text-secondary);
+  text-decoration: none;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.15em;
+  padding: 0.25rem 0;
+  overflow: visible;
+  transition: color 0.25s ease;
+}
+
+.nav-link:hover,
+.nav-link:focus {
+  color: #ffffff;
+  outline: none;
+}
+
+/* Sliding underline bar — real DOM element (no pseudo, Tailwind-safe) */
+.nav-link-bar {
+  display: block;
+  position: absolute;
+  bottom: -3px;
+  left: 50%;
+  width: 0;
+  height: 2px;
+  background: linear-gradient(90deg, #9d50bb, #FF9FFC);
+  border-radius: 9999px;
+  transition: width 0.35s cubic-bezier(0.34, 1.56, 0.64, 1),
+              left  0.35s cubic-bezier(0.34, 1.56, 0.64, 1),
+              box-shadow 0.3s ease;
+  pointer-events: none;
+}
+
+.nav-link:hover .nav-link-bar,
+.nav-link:focus  .nav-link-bar {
+  width: 100%;
+  left: 0;
+  box-shadow: 0 0 10px rgba(157, 80, 187, 0.9), 0 0 22px rgba(157, 80, 187, 0.45);
+}
+
+/* Glow dot */
+.nav-link-dot {
+  display: block;
+  position: absolute;
+  bottom: -8px;
+  left: 50%;
+  transform: translateX(-50%) scale(0);
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #9d50bb;
+  box-shadow: 0 0 10px rgba(157, 80, 187, 1), 0 0 20px rgba(157, 80, 187, 0.5);
+  opacity: 0;
+  transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1),
+              opacity 0.25s ease;
+  pointer-events: none;
+}
+
+.nav-link:hover .nav-link-dot,
+.nav-link:focus  .nav-link-dot {
+  transform: translateX(-50%) scale(1);
+  opacity: 1;
+}
+
+.nav-link:active {
+  color: #9d50bb;
+}
+
+/* ── Navbar Link (Mobile Menu) ───────────────── */
+.nav-link-mobile {
+  position: relative;
+  color: var(--text-secondary);
+  text-decoration: none;
+  font-size: 1.125rem;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  padding: 0.5rem 0 0.5rem 1rem;
+  border-left: 2px solid transparent;
+  transition: color 0.2s ease,
+              border-color 0.2s ease,
+              padding-left 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.nav-link-mobile:hover {
+  color: #ffffff;
+  border-left-color: #9d50bb;
+  padding-left: 1.5rem;
+  text-shadow: 0 0 20px rgba(157, 80, 187, 0.5);
+}
+
+.nav-link-mobile:active {
+  color: #9d50bb;
+}
+
