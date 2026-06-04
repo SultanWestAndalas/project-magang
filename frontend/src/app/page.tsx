@@ -6,8 +6,6 @@ import LiquidEther from "@/components/LiquidEther";
 import Link from "next/link";
 
 export default function Home() {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-
   // --- STATE ARTIKEL & KATEGORI ---
   const [posts, setPosts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -77,82 +75,26 @@ export default function Home() {
       {/* Navbar */}
       <nav className="fixed top-6 left-1/2 -translate-x-1/2 z-50 w-[95%] max-w-7xl">
         <div className="glass px-6 md:px-8 py-4 rounded-full flex items-center justify-between relative z-20">
-          <div className="text-xl md:text-2xl font-bold tracking-tight text-white flex items-center gap-2">
-            <img src="/logo-rai.png" alt="Logo rAi" className="w-10 h-10 object-contain" />
+          <div className="text-xl md:text-2xl font-bold tracking-tight text-white flex items-center gap-3">
+            <img src="/logo-rai.png" alt="Logo rAi" className="w-10 h-10 md:w-12 md:h-12 object-contain" />
             ResponsAIbility
           </div>
 
-          <div className="hidden md:flex items-center gap-8 text-sm font-medium text-text-secondary uppercase tracking-widest">
+          <div className="hidden lg:flex items-center gap-8 text-sm font-medium text-text-secondary uppercase tracking-widest">
             <NavLink href="#features">Features</NavLink>
             <NavLink href="#vision">Vision</NavLink>
             <NavLink href="#mission">Mission</NavLink>
             <NavLink href="#curriculum">Curriculum</NavLink>
-            <NavLink href="#ethical-ai">Ethical AI</NavLink>
+            <NavLink href="#blog">Artikel</NavLink> {/* Ditambahkan Link ke Artikel */}
           </div>
 
-          <div className="hidden md:flex items-center gap-4">
-            <button className="btn-ghost">Log In</button>
-            <button className="btn-signup shadow-xl shadow-white/10">Sign Up</button>
-          </div>
-
-          {/* Mobile Menu Toggle */}
-          <button
-            className="btn-icon md:hidden"
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
-          >
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              {isMenuOpen ? (
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              ) : (
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-              )}
-            </svg>
-          </button>
-        </div>
-
-        {/* Mobile menu overlay */}
-        <div
-          className={`fixed inset-0 z-40 transition-all duration-500 md:hidden ${isMenuOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
-            }`}
-        >
-          <div className="absolute inset-0 bg-black/60 backdrop-blur-xl" onClick={() => setIsMenuOpen(false)} />
-          <div className={`absolute top-0 right-0 h-full w-[80%] max-w-sm glass border-l border-white/10 p-10 flex flex-col gap-10 transition-transform duration-500 ${isMenuOpen ? "translate-x-0" : "translate-x-full"
-            }`}>
-            <div className="flex justify-between items-center mb-4">
-              <span className="text-xl font-bold">Menu</span>
-              <button
-                onClick={() => setIsMenuOpen(false)}
-                className="btn-icon"
-              >
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
-            </div>
-
-            <nav className="flex flex-col gap-8 text-lg font-medium text-text-secondary uppercase tracking-widest">
-              {[
-                { label: 'Features', href: '#features' },
-                { label: 'Vision', href: '#vision' },
-                { label: 'Mission', href: '#mission' },
-                { label: 'Curriculum', href: '#curriculum' },
-                { label: 'Ethical AI', href: '#ethical-ai' },
-              ].map(({ label, href }) => (
-                <a
-                  key={label}
-                  href={href}
-                  onClick={() => setIsMenuOpen(false)}
-                  className="nav-link-mobile"
-                >
-                  {label}
-                </a>
-              ))}
-            </nav>
-
-            <div className="mt-auto flex flex-col gap-4">
-              <button className="btn-ghost w-full">Log In</button>
-              <button className="btn-signup w-full">Sign Up</button>
-            </div>
+          <div className="flex items-center gap-4">
+            <Link href="/login" className="btn-ghost text-sm md:text-base inline-flex items-center justify-center hover:text-white transition-colors">
+              Log In
+            </Link>
+            <Link href="/register" className="btn-signup text-sm md:text-base inline-flex items-center justify-center shadow-xl shadow-white/10 hover:shadow-accent-purple/20 transition-all">
+              Sign Up
+            </Link>
           </div>
         </div>
       </nav>
@@ -161,7 +103,7 @@ export default function Home() {
       <section className="relative pt-32 md:pt-44 pb-16 md:pb-20 px-6 max-w-7xl mx-auto flex flex-col items-center text-center">
         <div className="glass px-4 py-1.5 rounded-full text-[10px] md:text-xs font-bold tracking-[0.2em] uppercase text-text-secondary mb-8 border border-white/5 flex items-center gap-2 animate-in fade-in slide-in-from-bottom-4 duration-700">
           <span className="w-1.5 h-1.5 bg-accent-purple rounded-full animate-pulse"></span>
-          Digital Literacy Powered by AI
+          AI Literacy for Everyone
         </div>
 
         <h1 className="text-4xl sm:text-5xl md:text-8xl font-bold tracking-tight leading-[1.1] mb-8 animate-in fade-in slide-in-from-bottom-8 duration-700 delay-100">
@@ -174,8 +116,13 @@ export default function Home() {
         </p>
 
         <div className="flex flex-col sm:flex-row items-center gap-4 animate-in fade-in slide-in-from-bottom-16 duration-700 delay-300 w-full sm:w-auto">
-          <button className="btn-primary w-full sm:w-auto min-w-[180px]">Get In Touch</button>
-          <button className="btn-secondary w-full sm:w-auto min-w-[180px]">Learn More</button>
+          {/* Tombol Diubah menjadi Link Fungsional */}
+          <Link href="#blog" className="btn-primary w-full sm:w-auto min-w-[180px] inline-flex items-center justify-center">
+            Mulai Membaca
+          </Link>
+          <Link href="#curriculum" className="btn-secondary w-full sm:w-auto min-w-[180px] inline-flex items-center justify-center">
+            Pelajari Kurikulum
+          </Link>
         </div>
       </section>
 
@@ -343,7 +290,6 @@ export default function Home() {
               <p className="text-text-secondary leading-relaxed text-base mb-8">
                 Quality Education—ensuring inclusive and equitable quality education and promoting lifelong learning opportunities for all. Our programs are built from the ground up to support this global commitment.
               </p>
-              <button className="btn-primary w-full sm:w-auto">Learn About SDG 4</button>
             </div>
             <div className="grid grid-cols-1 gap-4">
               {[
@@ -366,7 +312,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ── ARTIKEL / BLOG SECTION (TAMBAHAN KITA) ── */}
+      {/* ── ARTIKEL / BLOG SECTION ── */}
       <section id="blog" className="relative z-10 px-6 pb-16 md:pb-32 max-w-7xl mx-auto">
         <div className="text-center mb-16">
           <div className="inline-flex items-center gap-2 text-[10px] font-bold tracking-[0.25em] uppercase text-accent-purple mb-6 opacity-80">
@@ -378,7 +324,7 @@ export default function Home() {
           </h2>
         </div>
 
-        {/* === UI TOMBOL FILTER KATEGORI (PASANG DI SINI) === */}
+        {/* === UI TOMBOL FILTER KATEGORI === */}
         <div className="flex flex-wrap justify-center gap-4 mb-12 relative z-10">
           <button 
             onClick={() => setActiveCategory('all')}
@@ -396,24 +342,21 @@ export default function Home() {
             </button>
           ))}
         </div>
-        {/* =================================================== */}
 
         {loading ? (
           <div className="flex justify-center items-center py-10">
             <div className="w-10 h-10 border-2 border-accent-purple border-t-transparent rounded-full animate-spin"></div>
           </div>
-        ) : filteredPosts.length === 0 ? ( // <--- UBAH INI JADI filteredPosts
+        ) : filteredPosts.length === 0 ? ( 
           <div className="glass p-8 rounded-[32px] text-center text-text-secondary border border-white/5">
             Belum ada artikel yang diterbitkan untuk kategori ini.
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredPosts.map((post) => ( // <--- UBAH INI JADI filteredPosts
+            {filteredPosts.map((post) => ( 
               <div key={post.ID} className="glass p-6 md:p-8 rounded-[32px] group hover:border-accent-purple/50 transition-all duration-500 relative flex flex-col h-full overflow-hidden">
-                {/* Dekorasi sudut membulat bawaan desain asli */}
                 <div className="absolute top-0 right-0 w-32 h-32 bg-accent-purple/5 rounded-full -translate-y-1/2 translate-x-1/2 group-hover:bg-accent-purple/10 transition-all duration-500" />
                 
-                {/* --- AREA GAMBAR THUMBNAIL (BARU) --- */}
                 {post.Thumbnail ? (
                   <div className="relative w-full h-48 sm:h-56 mb-6 rounded-2xl overflow-hidden z-10 shrink-0">
                     <img 
@@ -423,7 +366,6 @@ export default function Home() {
                     />
                   </div>
                 ) : (
-                  // Tampilan jika artikel tidak memiliki gambar (Placeholder)
                   <div className="relative w-full h-48 sm:h-56 mb-6 rounded-2xl overflow-hidden z-10 shrink-0 bg-gradient-to-br from-white/5 to-transparent border border-white/5 flex items-center justify-center">
                     <svg className="w-8 h-8 text-white/20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
@@ -431,12 +373,10 @@ export default function Home() {
                   </div>
                 )}
                 
-                {/* --- TANGGAL --- */}
                 <div className="text-[10px] font-bold tracking-[0.2em] text-accent-purple uppercase mb-4 opacity-80 relative z-10">
                   {new Date(post.CreatedAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}
                 </div>
                 
-                {/* --- JUDUL & KONTEN --- */}
                 <h3 className="text-xl md:text-2xl font-bold mb-4 group-hover:text-white transition-colors line-clamp-2 relative z-10">
                   {post.Title}
                 </h3>
@@ -445,7 +385,6 @@ export default function Home() {
                   {post.Content}
                 </p>
                 
-                {/* --- AUTHOR & TOMBOL BACA --- */}
                 <div className="flex items-center justify-between border-t border-white/10 pt-5 mt-auto relative z-10">
                   <span className="text-xs font-medium text-white/70 flex items-center gap-2">
                     <div className="w-6 h-6 rounded-full bg-gradient-to-br from-accent-purple to-accent-magenta flex items-center justify-center text-[10px] text-white font-bold">
@@ -465,7 +404,6 @@ export default function Home() {
           </div>
         )}
       </section>
-      {/* ── AKHIR BLOG SECTION ── */}
 
       {/* ── CTA SECTION ── */}
       <section id="ethical-ai" className="relative z-10 px-6 pb-16 md:pb-32 max-w-7xl mx-auto text-center">
@@ -486,8 +424,13 @@ export default function Home() {
               Whether you are a student, educator, NGO, or organization—join us in building an equitable, AI-literate world.
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4 w-full sm:w-auto">
-              <button className="btn-primary w-full sm:w-auto min-w-[200px]">Get Started Free</button>
-              <button className="btn-secondary w-full sm:w-auto min-w-[200px]">Partner With Us</button>
+              {/* Tombol Diubah menjadi Link Fungsional */}
+              <Link href="/register" className="btn-primary w-full sm:w-auto min-w-[200px] inline-flex items-center justify-center">
+                Get Started Free
+              </Link>
+              <a href="mailto:admin@responsaibility.com" className="btn-secondary w-full sm:w-auto min-w-[200px] inline-flex items-center justify-center">
+                Partner With Us
+              </a>
             </div>
           </div>
         </div>
@@ -507,22 +450,29 @@ export default function Home() {
             </p>
           </div>
           {/* Links */}
-          {[
-            { title: 'Company', links: ['About Us', 'Vision', 'Mission', 'Team'] },
-            { title: 'Programs', links: ['AI Literacy', 'Ethical AI', 'Youth Programs', 'Curriculum'] },
-            { title: 'Resources', links: ['Blog', 'Research', 'SDG 4', 'Contact'] },
-          ].map((col) => (
-            <div key={col.title}>
-              <h4 className="text-xs font-bold tracking-widest uppercase text-text-secondary mb-4">{col.title}</h4>
-              <ul className="space-y-2">
-                {col.links.map(link => (
-                  <li key={link}>
-                    <a href="#" className="text-sm text-white/50 hover:text-white transition-colors duration-200">{link}</a>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
+          <div>
+            <h4 className="text-xs font-bold tracking-widest uppercase text-text-secondary mb-4">Company</h4>
+            <ul className="space-y-2">
+              <li><Link href="#vision" className="text-sm text-white/50 hover:text-white transition-colors duration-200">Vision</Link></li>
+              <li><Link href="#mission" className="text-sm text-white/50 hover:text-white transition-colors duration-200">Mission</Link></li>
+              <li><Link href="#features" className="text-sm text-white/50 hover:text-white transition-colors duration-200">Features</Link></li>
+            </ul>
+          </div>
+          <div>
+            <h4 className="text-xs font-bold tracking-widest uppercase text-text-secondary mb-4">Programs</h4>
+            <ul className="space-y-2">
+              <li><Link href="#curriculum" className="text-sm text-white/50 hover:text-white transition-colors duration-200">Curriculum (SDG 4)</Link></li>
+              <li><Link href="#ethical-ai" className="text-sm text-white/50 hover:text-white transition-colors duration-200">Ethical AI</Link></li>
+              <li><Link href="/login" className="text-sm text-white/50 hover:text-white transition-colors duration-200">CMS Login</Link></li>
+            </ul>
+          </div>
+          <div>
+            <h4 className="text-xs font-bold tracking-widest uppercase text-text-secondary mb-4">Resources</h4>
+            <ul className="space-y-2">
+              <li><Link href="#blog" className="text-sm text-white/50 hover:text-white transition-colors duration-200">Blog / Artikel</Link></li>
+              <li><a href="mailto:admin@responsaibility.com" className="text-sm text-white/50 hover:text-white transition-colors duration-200">Contact Us</a></li>
+            </ul>
+          </div>
         </div>
         <div className="border-t border-white/5 pt-8 flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-text-secondary/50 text-center md:text-left">
           <p>© 2026 ResponsAIbility. All rights reserved.</p>
@@ -566,21 +516,19 @@ function BadgeFloating({ text, top, left, right, bottom, delay }: { text: string
 
 function NavLink({ href, children }: { href: string; children: React.ReactNode }) {
   return (
-    <a
+    <Link
       href={href}
       className="nav-link group"
     >
       {children}
-      {/* Animated underline bar — real element, not pseudo, avoids Tailwind preflight override */}
       <span
         className="nav-link-bar"
         aria-hidden="true"
       />
-      {/* Glow dot */}
       <span
         className="nav-link-dot"
         aria-hidden="true"
       />
-    </a>
+    </Link>
   );
 }
