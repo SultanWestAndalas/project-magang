@@ -30,6 +30,13 @@ export default function LoginPage() {
         throw new Error(data.error || "Gagal login, periksa kembali email/password");
       }
 
+      // === GEMBOK KEAMANAN (BARU) ===
+      // Tolak jika yang login adalah Publik/Member (role_id: 2)
+      if (data.role_id === 2) {
+        throw new Error("Akses ditolak! Halaman ini khusus untuk Tim rAi.");
+      }
+      // ==============================
+
       localStorage.setItem("token", data.token);
       localStorage.setItem("role_id", data.role_id.toString());
       router.push("/dashboard");
@@ -73,7 +80,6 @@ export default function LoginPage() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="name@rai.com"
-              // text-white memastikan tulisan kelihatan jelas, bg-black/20 memberikan efek gelap transparan
               className="w-full px-4 py-3 rounded-xl bg-black/20 border border-white/10 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition duration-200"
               required
             />
