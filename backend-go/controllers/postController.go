@@ -249,3 +249,79 @@ func GetPublicCategories(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, gin.H{"data": categories})
 }
+
+// Fungsi untuk menyelesaikan artikel dan klaim XP (Gamifikasi)
+func CompletePost(c *gin.Context) {
+	// 1. Ambil user_id dari JWT
+	userID, exists := c.Get("user_id")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+		return
+	}
+
+	// 2. Ambil ID Artikel dari URL
+	postIDStr := c.Param("id")
+	postID, err := strconv.Atoi(postIDStr)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "ID Artikel tidak valid"})
+		return
+	}
+
+	// 3. Cek apakah user sudah pernah menyelesaikan artikel ini
+	var progress models.UserProgress
+	if err := config.DB.Where("user_id = ? AND post_id = ?", userID, postID).First(&progress).Error; err == nil {
+		c.JSON(http.StatusConflict, gin.H{"error": "Anda sudah mendapatkan XP dari materi ini."})
+		return
+	}
+
+	// 4. Jika belum, catat ke tabel user_progress
+	newProgress := models.UserProgress{
+		UserID: uint(userID.(float64)), // Casting dari tipe float64 JWT
+		PostID: uint(postID),
+	}
+	config.DB.Create(&newProgress)
+
+	// 5. Tambahkan XP ke User & Logika Naik Level
+	var user models.User
+	if err := config.DB.First(&user, userID).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "User tidak ditemukan"})
+		return
+	}
+
+	xpGained := 50 // Setiap baca artikel dapat 50 XP
+	user.XP += xpGained
+
+	// Logika Duolingo: Naik level setiap 100 XP
+	newLevel := (user.XP / 100) + 1
+	levelUp := false
+	if newLevel > user.Level {
+		user.Level = newLevel
+		levelUp = true
+	}
+
+	config.DB.Save(&user)
+
+	c.JSON(http.StatusOK, gin.H{
+		"message":        "Materi selesai! +50 XP ditambahkan.",
+		"xp_total":       user.XP,
+		"level_sekarang": user.Level,
+		"level_up":       levelUp,
+	})
+}
+
+// Mengambil kuis berdasarkan Post ID
+func GetQuizByPost(c *gin.Context) {
+	postID := c.Param("id")
+	var quizzes []models.Quiz
+
+	// Cari semua soal kuis yang terkait dengan ID Artikel ini
+	if err := config.DB.Where("post_id = ?", postID).Find(&quizzes).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Gagal mengambil kuis"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"message": "Berhasil mengambil data kuis",
+		"data":    quizzes,
+	})
+}

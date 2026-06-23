@@ -34,11 +34,25 @@ type User struct {
 	CreatedAt    time.Time `json:"created_at"`
 	UpdatedAt    time.Time `json:"updated_at"`
 	
+	// === TAMBAHAN UNTUK GAMIFIKASI (FITUR ALA DUOLINGO) ===
+	XP           int       `json:"xp" gorm:"default:0"`
+	Level        int       `json:"level" gorm:"default:1"`
+	
 	// Relasi ke Role (Belongs To) - WAJIB ADA AGAR .Preload("Role") BERHASIL
 	Role         Role      `gorm:"foreignKey:RoleID" json:"role"`
 	
 	// Relasi ke Post (One-to-Many, 1 User bisa buat banyak Post)
 	Posts        []Post    `gorm:"foreignKey:AuthorID" json:"posts,omitempty"`
+}
+
+// ==========================================
+// MODUL GAMIFIKASI (Progress Tracker)
+// ==========================================
+type UserProgress struct {
+	ID          uint      `json:"id" gorm:"primaryKey"`
+	UserID      uint      `json:"user_id"`
+	PostID      uint      `json:"post_id"`
+	CompletedAt time.Time `json:"completed_at" gorm:"autoCreateTime"`
 }
 
 // ==========================================
@@ -77,4 +91,18 @@ type Post struct {
 	
 	// Relasi ke Tag (Many-to-Many). GORM akan otomatis buat tabel "post_tags"
 	Tags       []Tag     `gorm:"many2many:post_tags;"`
+}
+
+// ==========================================
+// MODUL KUIS INTERAKTIF (EVALUASI LMS)
+// ==========================================
+type Quiz struct {
+	ID            uint   `json:"id" gorm:"primaryKey"`
+	PostID        uint   `json:"post_id"` // Kuis ini milik materi artikel yang mana
+	Question      string `json:"question" gorm:"type:text;not null"`
+	OptionA       string `json:"option_a" gorm:"not null"`
+	OptionB       string `json:"option_b" gorm:"not null"`
+	OptionC       string `json:"option_c" gorm:"not null"`
+	OptionD       string `json:"option_d" gorm:"not null"`
+	CorrectAnswer string `json:"correct_answer" gorm:"type:char(1);not null"` // Isi dengan 'A', 'B', 'C', atau 'D'
 }

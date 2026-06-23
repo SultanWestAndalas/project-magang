@@ -9,6 +9,8 @@ export default function MemberArea() {
   const [isLoading, setIsLoading] = useState(true);
   const [realPosts, setRealPosts] = useState<any[]>([]);
   const [errorMsg, setErrorMsg] = useState("");
+  const [userXp, setUserXp] = useState(0);
+  const [userLevel, setUserLevel] = useState(1);
 
   useEffect(() => {
     // 1. Proteksi Halaman: Cek token akses publik
@@ -17,6 +19,12 @@ export default function MemberArea() {
       router.push("/signin");
       return;
     }
+
+    
+    const xp = localStorage.getItem("user_xp");
+    const level = localStorage.getItem("user_level");
+    if (xp) setUserXp(parseInt(xp));
+    if (level) setUserLevel(parseInt(level));
 
     // 2. Fetch Data Artikel Asli dari Backend Golang
     const fetchPublicPosts = async () => {
@@ -46,6 +54,8 @@ export default function MemberArea() {
 
     fetchPublicPosts();
   }, [router]);
+  // Hitung persentase bar menuju level selanjutnya (1 Level = 100 XP)
+  const xpProgressPercent = userXp % 100;
 
   const handleLogout = () => {
     localStorage.removeItem("token");
@@ -166,13 +176,49 @@ export default function MemberArea() {
           {/* KOLOM KANAN: Gamifikasi & Riwayat */}
           <div className="flex flex-col gap-6">
             
-            {/* Gamifikasi Card */}
-            <div className="glass p-8 rounded-[32px] border border-white/5 text-center flex flex-col items-center">
-              <div className="w-20 h-20 bg-gradient-to-br from-blue-500 to-accent-purple rounded-full flex items-center justify-center text-4xl mb-4 shadow-lg shadow-purple-500/20">
-                🎯
+            {/* Gamifikasi Card: DUOLINGO STYLE */}
+            <div className="glass p-6 rounded-[32px] border border-white/5 relative overflow-hidden">
+              {/* Dekorasi Latar */}
+              <div className="absolute -right-6 -top-6 w-32 h-32 bg-blue-500/10 rounded-full blur-2xl" />
+              
+              <div className="flex items-center gap-5 relative z-10 mb-6">
+                {/* Avatar Level */}
+                <div className="relative shrink-0">
+                  <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-500 to-accent-magenta p-[2px] shadow-lg shadow-blue-500/20">
+                    <div className="w-full h-full bg-[#050505] rounded-[14px] flex items-center justify-center">
+                      <span className="text-2xl">🤖</span>
+                    </div>
+                  </div>
+                  <div className="absolute -bottom-2 -right-2 bg-white text-black text-xs font-black px-2 py-0.5 rounded-full border-2 border-[#050505]">
+                    Lvl {userLevel}
+                  </div>
+                </div>
+
+                {/* Info Text */}
+                <div className="flex-grow">
+                  <h3 className="text-white font-bold text-lg leading-tight mb-1">Status Pelajar</h3>
+                  <p className="text-xs text-text-secondary">Pahlawan Literasi AI</p>
+                </div>
               </div>
-              <h3 className="text-white font-bold text-lg mb-2">Pahlawan SDG 4</h3>
-              <p className="text-xs text-text-secondary leading-relaxed">Akun Anda dikonfigurasi untuk mendukung pilar pendidikan digital inklusif.</p>
+
+              {/* XP Progress Bar */}
+              <div className="relative z-10">
+                <div className="flex justify-between text-[10px] font-bold text-white/50 mb-2 uppercase tracking-wider">
+                  <span>{userXp} Total XP</span>
+                  <span className="text-accent-magenta">{100 - xpProgressPercent} XP ke Lvl {userLevel + 1}</span>
+                </div>
+                
+                {/* Bar */}
+                <div className="w-full h-4 bg-white/5 rounded-full p-0.5 border border-white/10 overflow-hidden">
+                  <div 
+                    className="h-full bg-gradient-to-r from-blue-500 to-accent-magenta rounded-full relative transition-all duration-1000 ease-out"
+                    style={{ width: `${xpProgressPercent}%` }}
+                  >
+                    {/* Efek Shine pada Bar */}
+                    <div className="absolute top-0 left-0 w-full h-1/2 bg-white/20 rounded-t-full"></div>
+                  </div>
+                </div>
+              </div>
             </div>
 
             {/* Rekomendasi / Terakhir Dilihat */}

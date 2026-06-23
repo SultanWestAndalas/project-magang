@@ -28,6 +28,8 @@ func ConnectDB() {
 		&models.Category{},
 		&models.Tag{},
 		&models.Post{},
+		&models.UserProgress{},
+		&models.Quiz{},
 	)
 
 	if err != nil {

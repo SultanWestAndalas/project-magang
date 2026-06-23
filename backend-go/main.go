@@ -51,6 +51,7 @@ func main() {
 		api.GET("/public/posts", controllers.GetPublicPosts)
 		api.GET("/public/posts/:slug", controllers.GetPublicPostBySlug)
 		api.GET("/public/categories", controllers.GetPublicCategories)
+		api.GET("/public/quizzes/:id", controllers.GetQuizByPost)
 	}
 
 	// === ROUTE TERPROTEKSI (Wajib Login) ===
@@ -79,6 +80,7 @@ func main() {
 		protected.POST("/posts", controllers.CreatePost)
 		protected.PUT("/posts/:id", controllers.UpdatePost)
 		protected.DELETE("/posts/:id", controllers.DeletePost)
+		protected.POST("/posts/:id/complete", controllers.CompletePost)
 
 		// === ROUTE UNTUK CATEGORIES ===
 		protected.GET("/categories", controllers.GetCategories)
